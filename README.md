@@ -1,2 +1,4 @@
 # mateSuperior
-El mejor repositorio para el codigo (?
+El mejor repositorio para el código (?
+
+¿Se aprueba? :P
