@@ -11,7 +11,7 @@ struct NumeroComplejo {
 };
 
 void formaBinomica (double a, double b) {
-	cout << "Su representacion en forma binomica sera:" << endl;
+	cout << "Su representacion en forma binomica es:" << endl;
 	
 	switch (int(b)) {
 		case 1:
@@ -26,32 +26,29 @@ void formaBinomica (double a, double b) {
 }
 
 void formaPolar (double a, double b) {
-	double modulo = sqrt(a*a+b*b);
-	
+	double modulo = sqrt(a * a + b * b);
 	double argumento;
 	
-	if (a>0 && b>0) {
-		argumento = atan(b/a);
-	} else if (a < 0 && b>0) {
-		argumento = atan(b/(-a));
-	} else if (a < 0 && b<0) {
-		argumento = atan((-b)/(-a));
-	} else if (a > 0 && b<0) {
-		argumento = atan((-b)/a);
+	if (a > 0 && b > 0) {
+		argumento = atan(b / a);
+	} else if ((a < 0 && b > 0) || (a < 0 && b < 0)) {
+		argumento = atan(b / a) + M_PI;
+	} else {
+		argumento = atan(b / a) + 2 * M_PI;
 	}
 	
-	cout << endl << "Su representacion en forma polar sera:" << endl << '[' << modulo << ',' << argumento << ']' << endl;
+	cout << endl << "Su representacion en forma polar es:" << endl << '[' << modulo << ", " << argumento << ']' << endl;
 }
 
 int main() {
 	NumeroComplejo comp;
 	
-	cout << "Ingrese dos numeros reales:" << endl;
+	cout << "Ingrese la parte real del numero complejo:" << endl;
 	cin >> comp.a;
+	cout << "Ingrese la parte imaginaria del numero complejo:" << endl;
 	cin >> comp.b;
 	
 	formaBinomica(comp.a,comp.b);
-	
 	formaPolar(comp.a,comp.b);
 	
 	return 0;
