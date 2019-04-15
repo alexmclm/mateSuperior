@@ -1,0 +1,55 @@
+#include <iostream>
+#include <string>
+#include <math.h>
+
+using namespace std;
+const char UNIDAD_IMAGINARIA = 'j';
+
+struct NumeroComplejo {
+	double a;
+	double b;
+};
+
+void formaBinomica (double a, double b) {
+	cout << "Su representacion en forma binomica es:" << endl;
+	
+	switch (int(b)) {
+		case 1:
+			cout << a << "+" << UNIDAD_IMAGINARIA;
+		break;
+		case -1:
+			cout << a << "-" << UNIDAD_IMAGINARIA;
+		break;
+		default:
+			cout << a << "+" << b << UNIDAD_IMAGINARIA;
+	}
+}
+
+void formaPolar (double a, double b) {
+	double modulo = sqrt(a * a + b * b);
+	double argumento;
+	
+	if (a > 0 && b > 0) {
+		argumento = atan(b / a);
+	} else if ((a < 0 && b > 0) || (a < 0 && b < 0)) {
+		argumento = atan(b / a) + M_PI;
+	} else {
+		argumento = atan(b / a) + 2 * M_PI;
+	}
+	
+	cout << endl << "Su representacion en forma polar es:" << endl << '[' << modulo << ", " << argumento << ']' << endl;
+}
+
+int main() {
+	NumeroComplejo comp;
+	
+	cout << "Ingrese la parte real del numero complejo:" << endl;
+	cin >> comp.a;
+	cout << "Ingrese la parte imaginaria del numero complejo:" << endl;
+	cin >> comp.b;
+	
+	formaBinomica(comp.a,comp.b);
+	formaPolar(comp.a,comp.b);
+	
+	return 0;
+}
