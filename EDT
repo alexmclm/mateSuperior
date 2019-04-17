@@ -18,15 +18,14 @@ struct ComplejoPolar {
 void binomica(double a, double b) {
 	cout << "Su representacion en forma binomica es: ";
 
-	switch (int(b)) {
-		case 1:
-			cout << a << '+' << UNIDAD_IMAGINARIA;
-			break;
-		case -1:
-			cout << a << '-' << UNIDAD_IMAGINARIA;
-			break;
-		default:
-			cout << a << '+' << b << UNIDAD_IMAGINARIA;
+	if (b == 1.0) {
+		cout << a << '+' << UNIDAD_IMAGINARIA;
+	} else if (b == -1.0) {
+		cout << a << '-' << UNIDAD_IMAGINARIA;
+	} else if (b < -1.0) {
+		cout << a << b << UNIDAD_IMAGINARIA;
+	} else {
+		cout << a << '+' << b << UNIDAD_IMAGINARIA;
 	}
 }
 
@@ -49,10 +48,23 @@ void polarABinomica(double modulo, double argumento) {
 	double parteReal = 0;
 	double parteImaginaria = 0;
 
+	while (argumento > 2 * M_PI) {
+		argumento -= M_PI;
+	}
 	parteReal = modulo * cos(argumento);
 	parteImaginaria = modulo * sin(argumento);
 
-	cout << endl << "Su representacion en forma binomica es: " << '(' << parteReal << ',' << parteImaginaria << ')';
+	cout << endl << "Su representacion en forma binomica es: ";
+	
+	if (parteImaginaria == 1.0) {
+		cout << parteReal << '+' << UNIDAD_IMAGINARIA;
+	} else if (parteImaginaria == -1.0) {
+		cout << parteReal << '-' << UNIDAD_IMAGINARIA;
+	} else if (parteImaginaria < -1.0) {
+		cout << parteReal << parteImaginaria << UNIDAD_IMAGINARIA;
+	} else {
+		cout << parteReal << '+' << parteImaginaria << UNIDAD_IMAGINARIA;
+	}
 }
 
 void funcionEDT() {
