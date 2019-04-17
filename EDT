@@ -1,34 +1,39 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-
 using namespace std;
+
 const char UNIDAD_IMAGINARIA = 'j';
 
-struct NumeroComplejo {
+struct ComplejoBinomica {
 	double a;
 	double b;
 };
 
-void formaBinomica (double a, double b) {
-	cout << "Su representacion en forma binomica es:" << endl;
-	
+struct ComplejoPolar {
+	double modulo;
+	double argumento;
+};
+
+void binomica(double a, double b) {
+	cout << "Su representacion en forma binomica es: ";
+
 	switch (int(b)) {
 		case 1:
-			cout << a << "+" << UNIDAD_IMAGINARIA;
-		break;
+			cout << a << '+' << UNIDAD_IMAGINARIA;
+			break;
 		case -1:
-			cout << a << "-" << UNIDAD_IMAGINARIA;
-		break;
+			cout << a << '-' << UNIDAD_IMAGINARIA;
+			break;
 		default:
-			cout << a << "+" << b << UNIDAD_IMAGINARIA;
+			cout << a << '+' << b << UNIDAD_IMAGINARIA;
 	}
 }
 
-void formaPolar (double a, double b) {
+void binomicaAPolar(double a, double b) {
 	double modulo = sqrt(a * a + b * b);
-	double argumento;
-	
+	double argumento = 0;
+
 	if (a > 0 && b > 0) {
 		argumento = atan(b / a);
 	} else if ((a < 0 && b > 0) || (a < 0 && b < 0)) {
@@ -36,20 +41,66 @@ void formaPolar (double a, double b) {
 	} else {
 		argumento = atan(b / a) + 2 * M_PI;
 	}
+
+	cout << endl << "Su representacion en forma polar es: " << '[' << modulo << ',' << argumento << ']';
+}
+
+void polarABinomica(double modulo, double argumento) {
+	double parteReal = 0;
+	double parteImaginaria = 0;
+
+	parteReal = modulo * cos(argumento);
+	parteImaginaria = modulo * sin(argumento);
+
+	cout << endl << "Su representacion en forma binomica es: " << '(' << parteReal << ',' << parteImaginaria << ')';
+}
+
+void funcionEDT() {
+	system("cls");	// Borra el contenido de la pantalla
 	
-	cout << endl << "Su representacion en forma polar es:" << endl << '[' << modulo << ", " << argumento << ']' << endl;
+	ComplejoBinomica comp;
+	ComplejoPolar polar;
+
+	cout << "Ingrese la parte real del numero complejo: ";
+	cin >> comp.a;
+	cout << endl << "Ingrese la parte imaginaria del numero complejo: ";
+	cin >> comp.b;
+
+	binomica(comp.a, comp.b);
+	
+	binomicaAPolar(comp.a, comp.b);
+
+	cout << endl << "Ingrese el modulo del numero complejo: ";
+	cin >> polar.modulo;
+	cout << endl << "Ingrese el argumento del numero complejo: ";
+	cin >> polar.argumento;
+
+	polarABinomica(polar.modulo, polar.argumento);	// NO FUNCIONA
 }
 
 int main() {
-	NumeroComplejo comp;
-	
-	cout << "Ingrese la parte real del numero complejo:" << endl;
-	cin >> comp.a;
-	cout << "Ingrese la parte imaginaria del numero complejo:" << endl;
-	cin >> comp.b;
-	
-	formaBinomica(comp.a,comp.b);
-	formaPolar(comp.a,comp.b);
-	
+
+	int opcion = 0;
+
+	do {
+		cout << endl << endl << "Bienvenido a la plataforma NCOM de Matematica Superior 2019." << endl << endl;
+		cout << "Ingrese su criterio de consulta:" << endl << endl;
+		cout << "1. Estructura, Datos y Transformaciones (EDT)" << endl;
+		cout << "2. Operaciones Básicas (OB)" << endl;
+		cout << "3. Operaciones Avanzadas (OA)" << endl;
+		cout << "4. Suma Fasores (SF)" << endl;
+		cout << "5. Salir" << endl << endl;
+
+		cout << "Opcion: ";
+		cin >> opcion;
+
+		switch (opcion) {
+			case 1:
+				funcionEDT();
+				break;
+				//case 2:
+		}
+	} while (opcion != 5);	// Mientras
+
 	return 0;
 }
