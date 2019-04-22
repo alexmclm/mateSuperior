@@ -34,35 +34,42 @@ void polar(double modulo, double argumento) {
 	while (argumento > 2 * M_PI) {
 		argumento -= M_PI;
 	}
-	
-	while (argumento < -1 * 2 * M_PI) {
+
+	while (argumento < 0) {
 		argumento += M_PI;
 	}
-	
-	/*while (argumento < - 2 * M_PI) {
-		argumento += M_PI;
-	}
-	
-	if (argumento < 0 && argumento > - 2 * M_PI) {
-		argumento *= -1;
-	}*/
-	
+
 	cout << endl << "Su representacion en forma polar es: " << '[' << modulo << ';' << argumento << ']';
 }
 
 void binomicaAPolar(double a, double b) {
-	double modulo = sqrt(a * a + b * b);
+	double modulo = 0;
 	double argumento = 0;
 
-	if (a > 0 && b > 0) {
-		argumento = atan(b / a);
-	} else if ((a < 0 && b > 0) || (a < 0 && b < 0)) {
-		argumento = atan(b / a) + M_PI;
-	} else {
-		argumento = atan(b / a) + 2 * M_PI;
+	modulo = sqrt(a * a + b * b);
+
+	if (a > 0 && b > 0) {	// Se encuentra en el 1er C
+		argumento = atan(b/a);
+	}
+	if (a < 0 && b > 0) {	// Se encuentra en el 2do C
+		argumento = atan(b/a) + M_PI;
+	}
+	if (a < 0 && b < 0) {	// Se encuentra en el 3er C
+		argumento = atan(b/a) + M_PI;
+	}
+	if (a < 0 && b == 0) {	// Se encuentra en el semieje negativo de la parte real (tiene 180 grados)
+		argumento = 2*M_PI;
+	}
+	if (a > 0 && b < 0) {	// Se encuentra en el 4to C
+		argumento = atan(b/a) + 2*M_PI;
+	}
+	if (a > 0 && b == 0) {	// Se encuentra en el semieje positivo de la parte real (tiene angulo nulo)
+		argumento = 0;
+	}
+	if (a == 0 && b == 0) {	// No tiene angulo (no es un numero)
+		argumento = NAN;
 	}
 
-	//cout << endl << "Su representacion en forma polar es: " << '[' << modulo << ',' << argumento << ']';
 	polar(modulo, argumento);
 }
 
@@ -70,23 +77,9 @@ void polarABinomica(double modulo, double argumento) {
 	double parteReal = 0;
 	double parteImaginaria = 0;
 
-	/*while (argumento > 2 * M_PI) {
-		argumento -= M_PI;
-	}*/
 	parteReal = modulo * cos(argumento);
 	parteImaginaria = modulo * sin(argumento);
 
-	/*cout << endl << "Su representacion en forma binomica es: ";
-
-	if (parteImaginaria == 1.0) {
-		cout << parteReal << '+' << UNIDAD_IMAGINARIA;
-	} else if (parteImaginaria == -1.0) {
-		cout << parteReal << '-' << UNIDAD_IMAGINARIA;
-	} else if (parteImaginaria < -1.0) {
-		cout << parteReal << parteImaginaria << UNIDAD_IMAGINARIA;
-	} else {
-		cout << parteReal << '+' << parteImaginaria << UNIDAD_IMAGINARIA;
-	}*/
 	binomica(parteReal, parteImaginaria);
 }
 
@@ -101,27 +94,30 @@ void funcionEDT() {
 	cin >> opcion;
 
 	if (opcion == 1) {
-		cout << "Ingrese la parte real del numero complejo: ";
+		cout << endl << "Ingrese la parte real del numero complejo: ";
 		cin >> binom.a;
 		cout << endl << "Ingrese la parte imaginaria del numero complejo: ";
 		cin >> binom.b;
 
 		binomica(binom.a, binom.b);
-		if (binom.a != 0.0) {
-			binomicaAPolar(binom.a, binom.b);
-		} else {
-			binomicaAPolar(M_PI / 2, binom.b);
-		}
+		cout << endl;
+		binomicaAPolar(binom.a, binom.b);
 	} else if (opcion == 2) {
-		cout << endl << endl << "Ingrese el modulo del numero complejo: ";
+		cout << endl << "Ingrese el modulo del numero complejo: ";
 		cin >> pol.modulo;
-		cout << endl << "Ingrese el argumento del numero complejo: ";
-		cin >> pol.argumento;
+		if (pol.modulo < 0) {
+			cout << endl << "El modulo debe ser positivo. Saliendo...";
+			return;
+		} else {
+			cout << endl << "Ingrese el argumento del numero complejo: ";
+			cin >> pol.argumento;
 
-		polar(pol.modulo, pol.argumento);
-		polarABinomica(pol.modulo, pol.argumento);
+			polar(pol.modulo, pol.argumento);
+			cout << endl;
+			polarABinomica(pol.modulo, pol.argumento);
+		}
 	} else {
-		cout << "Datos incorrectos.";
+		cout << endl << "Datos incorrectos.";
 	}
 }
 
@@ -146,8 +142,11 @@ int main() {
 				funcionEDT();
 				break;
 				//case 2:
+			case 5:
+				cout << endl << "Salida con exito.";
+				break;
 		}
-	} while (opcion != 5);	// Mientras
+	} while (opcion != 5);
 
 	return 0;
 }
