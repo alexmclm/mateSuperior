@@ -121,6 +121,12 @@ void binomicaAPolar(double a, double b) {
 	if (a > 0 && b == 0) { // Se encuentra en el semieje positivo de la parte real (tiene angulo nulo)
 		argumento = 0;
 	}
+	if (a == 0 && b > 0) { // Se encuentra en el semieje positivo de la parte imaginaria (tiene angulo recto)
+		argumento = M_PI / 2;
+	}
+	if (a == 0 && b < 0) { // Se encuentra en el semieje negativo de la parte imaginaria (tiene 270 grados)
+		argumento = 3 * M_PI / 2;
+	}
 	if (a == 0 && b == 0) { // No tiene angulo (no es un numero)
 		argumento = NAN;
 	}
@@ -135,10 +141,6 @@ void polar(double modulo, double argumento) {
 
 	while (argumento < 0) { // Si se pasa de menos tambien se lo lleva al 1er giro positivo, pero al reves que antes
 		argumento += M_PI;
-	}
-
-	if (argumento == 0) { // No tiene angulo (no es un numero)
-		argumento = NAN;
 	}
 
 	cout << endl << "Su representacion en forma polar es: " << '[' << modulo << ';' << argumento << ']'; // [a;b]
