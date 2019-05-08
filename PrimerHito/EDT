@@ -1,0 +1,166 @@
+#include <iostream>
+#include <string>
+#include <math.h>
+using namespace std;
+
+// Declaracion de estructuras
+
+struct ComplejoBinomica {
+	double a;
+	double b;
+};
+
+struct ComplejoPolar {
+	double modulo;
+	double argumento;
+};
+
+// Declaracion de prototipos
+
+void binomica(double, double);
+void polar(double, double);
+void binomicaAPolar(double, double);
+void polarABinomica(double, double);
+void funcionEDT();
+
+// Funcion principal
+
+int main() {
+	int opcion = 0;
+
+	do {
+		cout << endl << endl << "Bienvenido a la plataforma NCOM del grupo K3011_9 de Matematica Superior 2019." << endl << endl;
+		cout << "Ingrese su criterio de consulta:" << endl << endl;
+		cout << "1. Estructura, Datos y Transformaciones (EDT)" << endl;
+		cout << "2. Operaciones Basicas (OB)" << endl;
+		cout << "3. Operaciones Avanzadas (OA)" << endl;
+		cout << "4. Suma Fasores (SF)" << endl;
+		cout << "5. Salir" << endl << endl;
+
+		cout << "Opcion: ";
+		cin >> opcion;
+
+		switch (opcion) {
+			case 1:
+				funcionEDT();
+				break;
+				//case 2:
+			case 5:
+				cout << endl << "Salida con exito.";
+				break;
+		}
+	} while (opcion != 5);
+
+	return 0;
+}
+
+void funcionEDT() {
+	system("cls"); // Borra el contenido de la pantalla
+	unsigned short int opcion = 0;
+
+	ComplejoBinomica binom;
+	ComplejoPolar pol;
+
+	cout << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+	cin >> opcion;
+
+	if (opcion == 1) {
+		cout << endl << "Ingrese la parte real del numero complejo: ";
+		cin >> binom.a;
+		cout << endl << "Ingrese la parte imaginaria del numero complejo: ";
+		cin >> binom.b;
+
+		binomica(binom.a, binom.b); // Luego de ingresar las partes real e imaginaria se lo muestra con formato
+		cout << endl;
+		binomicaAPolar(binom.a, binom.b); // Se hace el calculo del pasaje y se lo muestra en polar
+	} else if (opcion == 2) {
+		cout << endl << "Ingrese el modulo del numero complejo: ";
+		cin >> pol.modulo;
+		if (pol.modulo < 0) {
+			cout << endl << "El modulo debe ser positivo. Saliendo...";
+			return;
+		} else {
+			cout << endl << "Ingrese el argumento del numero complejo: ";
+			cin >> pol.argumento;
+
+			polar(pol.modulo, pol.argumento); // Luego de ingresar el modulo y argumento se lo muestra con formato
+			cout << endl;
+			polarABinomica(pol.modulo, pol.argumento); // Se hace el calculo del pasaje y se lo muestra en binomica
+		}
+	} else {
+		cout << endl << "Datos incorrectos. Saliendo..."; // Si no coincide con los criterios de busqueda
+		return;
+	}
+}
+
+void binomica(double a, double b) {
+	cout << endl << "Su representacion en forma binomica es: " << '(' << a << ',' << b << ')'; // (a,b)
+}
+
+void binomicaAPolar(double a, double b) {
+	double modulo = 0;
+	double argumento = 0;
+
+	modulo = sqrt(a*a + b*b); // Calculo del modulo
+
+	if (a > 0 && b > 0) { // Se encuentra en el 1er C
+		argumento = atan(b/a);
+	}
+	if (a < 0 && b > 0) { // Se encuentra en el 2do C
+		argumento = atan(b/a) + M_PI;
+	}
+	if (a < 0 && b < 0) { // Se encuentra en el 3er C
+		argumento = atan(b/a) + M_PI;
+	}
+	if (a < 0 && b == 0) { // Se encuentra en el semieje negativo de la parte real (tiene 180 grados)
+		argumento = 2*M_PI;
+	}
+	if (a > 0 && b < 0) { // Se encuentra en el 4to C
+		argumento = atan(b/a) + 2*M_PI;
+	}
+	if (a > 0 && b == 0) { // Se encuentra en el semieje positivo de la parte real (tiene angulo nulo)
+		argumento = 0;
+	}
+	if (a == 0 && b > 0) { // Se encuentra en el semieje positivo de la parte imaginaria (tiene angulo recto)
+		argumento = M_PI / 2;
+	}
+	if (a == 0 && b < 0) { // Se encuentra en el semieje negativo de la parte imaginaria (tiene 270 grados)
+		argumento = 3 * M_PI / 2;
+	}
+	if (a == 0 && b == 0) { // No tiene angulo (no es un numero)
+		argumento = NAN;
+	}
+
+	polar(modulo, argumento); // Se lo muestra en forma polar
+}
+
+void polar(double modulo, double argumento) {
+	while (argumento > 2*M_PI) { // Si se pasa de mas se lo lleva al 1er giro positivo
+		argumento -= M_PI;
+	}
+
+	while (argumento < 0) { // Si se pasa de menos tambien se lo lleva al 1er giro positivo, pero al reves que antes
+		argumento += M_PI;
+	}
+
+	cout << endl << "Su representacion en forma polar es: " << '[' << modulo << ';' << argumento << ']'; // [a;b]
+}
+
+void polarABinomica(double modulo, double argumento) {
+	double parteReal = 0;
+	double parteImaginaria = 0;
+
+	// Para hacer las cuentas correctamente se lleva el argumento al 1er giro positivo
+	while (argumento > 2*M_PI) {
+		argumento -= M_PI;
+	}
+
+	while (argumento < 0) {
+		argumento += M_PI;
+	}
+
+	parteReal = modulo * cos(argumento);
+	parteImaginaria = modulo * sin(argumento);
+
+	binomica(parteReal, parteImaginaria);
+}
