@@ -42,11 +42,10 @@ void funcionOB();
 
 // Funciones Potencia
 void potenciaDeBinomica();
-double calculoPotencia(double,int);
-double combinatorio (int, int);
-//Binomica potenciaBinomica(Binomica);
+//double calculoPotencia(double,int);
+//double combinatorio (int, int);
 void funcionOA();
-
+void radicacion();
 
 // Funcion principal
 
@@ -483,7 +482,7 @@ void funcionOA(){
 	int option;
 	cout<< "Ingrese el numero de operacion que desee realizar " << "\n";
 	cout<< "1. Potenciacion de un Complejo Binomico"<<"\n";
-	cout<< "3. Raiz n-esima "<<endl;
+	cout<< "2. Raiz n-esima "<<endl;
 	cout<< " \n" <<"opcion: ";
 	
 	cin >> option;
@@ -493,7 +492,7 @@ void funcionOA(){
 			potenciaDeBinomica();
 			break;
 		case(2):
-			// calculo raiz n-sima
+			radicacion();
 			break;
 			
 		default:
@@ -531,4 +530,27 @@ void potenciaDeBinomica(){
 	return;
 }
 
+void radicacion(){
+	Binomica b1;
+	Polar radica;
+	int indiceIngresado;
+	Polar W[indiceIngresado];
+	ingresoDeDatosBinomica(b1);
+	cout <<"\n";
+	cout << "Ingrese el indice de raiz con el cual desea operar: ";	
+	cin >> indiceIngresado;
+	
+	radica = binomicaAPolar(b1);
+	
+	for (int i=0; i< indiceIngresado ; i++){
+	//revisar por que me da 1 en el modulo, cosa que no deberia pasar
+		W[i].modulo =pow(radica.modulo, 1/indiceIngresado);
+		W[i].argumento = (radica.argumento + (2*i*M_PI))/indiceIngresado;
+		
+	}
+	for (int i=0; i< indiceIngresado ; i++){
+		cout << "W"<< i <<" es: ["<< W[i].modulo << "," << W[i].argumento <<"]"<<endl;
+	}
+	return;
+}
 
