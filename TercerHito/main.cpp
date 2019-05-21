@@ -533,8 +533,8 @@ void potenciaDeBinomica(){
 void radicacion(){
 	Binomica b1;
 	Polar radica;
-	int indiceIngresado;
-	Polar W[indiceIngresado];
+	double indiceIngresado;
+	Polar W[(int)indiceIngresado];
 	ingresoDeDatosBinomica(b1);
 	cout <<"\n";
 	cout << "Ingrese el indice de raiz con el cual desea operar: ";	
@@ -544,8 +544,8 @@ void radicacion(){
 	
 	for (int i=0; i< indiceIngresado ; i++){
 	//revisar por que me da 1 en el modulo, cosa que no deberia pasar
-		W[i].modulo =pow(radica.modulo, 1/indiceIngresado);
-		W[i].argumento = (radica.argumento + (2*i*M_PI))/indiceIngresado;
+		W[i].modulo =pow(radica.modulo, (1/indiceIngresado));
+		W[i].argumento = (radica.argumento + (2*i*M_PI))/(int)indiceIngresado;
 		
 	}
 	for (int i=0; i< indiceIngresado ; i++){
