@@ -42,11 +42,11 @@ void funcionOB();
 
 // Funciones Potencia
 void potenciaDeBinomica();
-//double calculoPotencia(double,int);
-//double combinatorio (int, int);
+
 void funcionOA();
 void radicacion();
-
+int MCD(int,int);
+bool esPrimitiva(int,int);
 // Funcion principal
 
 int main() {
@@ -510,8 +510,7 @@ void potenciaDeBinomica(){
 	Polar pot; 
 	
 	int exponente;
-	double xreal;
-	double yimagin;
+
 	int sgno;
 	
 	ingresoDeDatosBinomica(b1);
@@ -535,6 +534,7 @@ void radicacion(){
 	Polar radica;
 	double indiceIngresado;
 	Polar W[(int)indiceIngresado];
+	Polar Wprimitiva[(int)indiceIngresado];
 	ingresoDeDatosBinomica(b1);
 	cout <<"\n";
 	cout << "Ingrese el indice de raiz con el cual desea operar: ";	
@@ -543,7 +543,6 @@ void radicacion(){
 	radica = binomicaAPolar(b1);
 	
 	for (int i=0; i< indiceIngresado ; i++){
-	//revisar por que me da 1 en el modulo, cosa que no deberia pasar
 		W[i].modulo =pow(radica.modulo, (1/indiceIngresado));
 		W[i].argumento = (radica.argumento + (2*i*M_PI))/(int)indiceIngresado;
 		
@@ -551,6 +550,20 @@ void radicacion(){
 	for (int i=0; i< indiceIngresado ; i++){
 		cout << "W"<< i <<" es: ["<< W[i].modulo << "," << W[i].argumento <<"]"<<endl;
 	}
+	// raiz primitiva explota, mala raiz primitiva 
+	for (int i=0; i<indiceIngresado;i++){
+		if (esPrimitiva(i,indiceIngresado)){
+			Wprimitiva[i].modulo = pow(radica.modulo, (1/indiceIngresado));
+			Wprimitiva[i].modulo= (radica.argumento + (2*i*M_PI))/indiceIngresado;
+			cout << "Las raiz primitiva  W"<< i <<" es: ["<< Wprimitiva[i].modulo << "," << Wprimitiva[i].argumento <<"]"<<endl;
+		}
+	}
 	return;
 }
-
+int MCD (int  indice, int base ){
+	if (base == 0) return indice;
+	else return MCD(base, indice % base);
+}
+bool esPrimitiva (int indice, int base){
+	return MCD(indice,base) == 1;
+}
