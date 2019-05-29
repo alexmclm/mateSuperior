@@ -1,0 +1,737 @@
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <math.h>
+using namespace std;
+
+// Declaracion de estructuras
+
+struct Binomica {
+	double real;
+	double imaginaria;
+};
+
+struct Polar {
+	double modulo;
+	double argumento;
+};
+
+struct Trigonometrica { // A*cos(w*t+p) o A*sen(w*t+p)
+	double amplitud; // A
+	double frecAngular; // w
+	double fase; // p
+};
+
+// Declaracion de prototipos
+
+void ImprimirBinomica(Binomica);
+void ImprimirPolar(Polar);
+void funcionEDT();
+Polar binomicaAPolar(Binomica);
+Binomica polarABinomica(Polar);
+double moduloBinomica(Binomica);
+double calcularArgumento(double, double);
+double argumentoEnElPrimerGiro(double);
+// Funciones OB
+void ingresoDeDatosBinomica(Binomica&);
+void ingresoDeDatosPolar(Polar&);
+void ingresoDeDatosOB(Binomica&, Binomica&);
+Binomica sumarBinomica(Binomica, Binomica);
+void suma();
+Binomica restarBinomica(Binomica, Binomica);
+void resta();
+Polar productoPolar(Polar, Polar);
+void producto();
+Polar cocientePolar(Polar, Polar);
+void cociente();
+void funcionOB();
+void funcionOA();
+void potenciacion();
+Polar potenciaPolar(Polar, int);
+
+
+void fasores();
+void ingresoDeDatosTrigo(Trigonometrica &);
+Trigonometrica pasajeACoseno(Trigonometrica &);
+void ingresoDeDatosSF();
+void funcionSF();
+
+// Funcion principal
+
+int main() {
+	int opcion;
+
+	do {
+		system("cls");
+		cout << "\n" << "\t**- Bienvenido a la plataforma NCOM del grupo K3011_9 de Matematica Superior 2019. -**" << "\n" << "\n";
+		cout << "Ingrese su criterio de consulta:" << "\n" << "\n";
+		cout << "1. Estructura, Datos y Transformaciones (EDT)" << "\n";
+		cout << "2. Operaciones Basicas (OB)" << "\n";
+		cout << "3. Operaciones Avanzadas (OA)" << "\n";
+		cout << "4. Suma Fasores (SF)" << "\n";
+		cout << "5. Salir" << "\n" << "\n";
+
+		cout << "Opcion: ";
+		cin >> opcion;
+
+		switch (opcion) {
+			case 1:
+				funcionEDT();
+				break;
+			case 2:
+				funcionOB();
+				break;
+			case 3:
+				funcionOA();
+				break;
+			case 4:
+				funcionSF();
+			case 5:
+				cout << "\n" << "Salida con exito.\n\n" << "\n";
+				break;
+			default:
+				cout<< "\n" << "Valor incorrecto. Vuelva a intentarlo\n\n";
+				break;
+		}
+
+		system("PAUSE()");
+	} while (opcion != 5);
+
+	return 0;
+}
+
+void funcionEDT() {
+	system("cls"); // Borra el contenido de la pantalla
+	int opcion;
+
+	Binomica binom;
+	Polar pol;
+
+	cout << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+	cin >> opcion;
+
+	switch(opcion) {
+		case 1:
+			cout << "\n" << "Ingrese la parte real del numero complejo: ";
+			cin >> binom.real;
+			cout << "\n" << "Ingrese la parte imaginaria del numero complejo: ";
+			cin >> binom.imaginaria;
+			ImprimirBinomica(binom); // Luego de ingresar las partes real e imaginaria se lo muestra con formato
+			pol = binomicaAPolar(binom); // Se hace el calculo del pasaje y se lo muestra en polar
+			ImprimirPolar(pol); // Se lo muestra en forma polar
+			break;
+		case 2:
+			cout << "\n" << "Ingrese el modulo del numero complejo: ";
+			cin >> pol.modulo;
+			if (pol.modulo < 0) {
+				cout << "\n" << "El modulo debe ser positivo. Saliendo...\n\n";
+				return;
+			} else {
+				cout << "\n" << "Ingrese el argumento del numero complejo: ";
+				cin >> pol.argumento;
+				ImprimirPolar(pol); // Luego de ingresar el modulo y argumento se lo muestra con formato
+				cout << "\n";
+				binom = polarABinomica(pol); // Se hace el calculo del pasaje y se lo muestra en binomica
+				ImprimirBinomica(binom);
+			}
+			break;
+		default:
+			cout << "\n" << "Datos incorrectos. Saliendo . . .\n"; // Si no coincide con los criterios de busqueda
+			return;
+			break;
+	}
+	cout << "\n\n";
+}
+
+// Pasajes
+Binomica polarABinomica(Polar p) {
+	Binomica binom;
+	binom.real= p.modulo * cos(p.argumento);
+	binom.imaginaria = p.modulo * sin(p.argumento);
+
+	return binom;
+}
+
+Polar binomicaAPolar(Binomica b) {
+	Polar pol;
+	pol.modulo = moduloBinomica(b); // Calculo del modulo
+	pol.argumento = argumentoEnElPrimerGiro(calcularArgumento(b.real, b.imaginaria));
+	return pol;
+}
+
+// Calculos sobre polares
+double calcularArgumento(double a, double b) {
+	double argumento = 0;
+	if (a > 0 && b > 0) { // Se encuentra en el 1er C
+		argumento = atan(b/a);
+	}
+	if (a < 0 && b < 0 || a < 0 && b > 0) { // Se encuentra en el 3er C
+		argumento = atan(b/a) + M_PI;
+	}
+	if (a < 0 && b == 0) { // Se encuentra en el semieje negativo de la parte real (tiene 180 grados)
+		argumento = 2*M_PI;
+	}
+	if (a > 0 && b < 0) { // Se encuentra en el 4to C
+		argumento = atan(b/a) + 2*M_PI;
+	}
+	if (a > 0 && b == 0) { // Se encuentra en el semieje positivo de la parte real (tiene angulo nulo)
+	}
+	if (a == 0 && b > 0) { // Se encuentra en el semieje positivo de la parte imaginaria (tiene angulo recto)
+		argumento = M_PI / 2;
+	}
+	if (a == 0 && b < 0) { // Se encuentra en el semieje negativo de la parte imaginaria (tiene 270 grados)
+		argumento = 3 * M_PI / 2;
+	}
+	if (a == 0 && b == 0) { // No tiene angulo (no es un numero)
+		argumento = NAN;
+	}
+	return argumento;
+}
+
+double moduloBinomica(Binomica b) {
+	return sqrt(b.real*b.real + b.imaginaria*b.imaginaria);
+}
+
+double argumentoEnElPrimerGiro(double arg) {
+	while (arg > 2*M_PI) { // Si se pasa de mas se lo lleva al 1er giro positivo
+		arg -= M_PI;
+	}
+
+	while (arg < 0) { // Si se pasa de menos tambien se lo lleva al 1er giro positivo, pero al reves que antes
+		arg += M_PI;
+	}
+	return arg;
+}
+
+
+// Imprimir resultados
+void ImprimirBinomica(Binomica b) {
+	cout << "\n" << "Su representacion en forma binomica es: " << '(' << b.real << ',' << b.imaginaria << ')' << "\n"; // (a,b)
+}
+
+void ImprimirPolar(Polar p) {
+	cout << "\n" << "Su representacion en forma polar es: " << '[' << p.modulo << ';' << p.argumento << ']' << "\n"; // [a;b]
+}
+
+// Ingreso de datos
+void ingresoDeDatosBinomica(Binomica &b) {
+	cout << "\n" << "Ingrese la parte real numero complejo: ";
+	cin >> b.real;
+	cout << "\n" << "Ingrese la parte imaginaria del numero complejo: ";
+	cin >> b.imaginaria;
+}
+
+void ingresoDeDatosPolar(Polar &p) {
+	cout << "\n" << "Ingrese el modulo del numero complejo: ";
+	cin >> p.modulo;
+
+	if (p.modulo < 0) {
+		cout << "\n" << "El modulo debe ser positivo" << "\n";
+		while (p.modulo < 0) {
+			cout << "\n" << "Ingrese el modulo del numero complejo: ";
+			cin >> p.modulo;
+		}
+	}
+
+	cout << "\n" << "Ingrese el argumento del numero complejo: ";
+	cin >> p.argumento;
+}
+
+void ingresoDeDatosOB(Binomica &b1, Binomica &b2) {
+	Polar p1, p2;
+	int modoC1 = 0, modoC2 = 0;
+
+	do {
+		cout << "\n" << "Complejo 1:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+		cin >> modoC1;
+
+		switch (modoC1) {
+			case 1:
+				ingresoDeDatosBinomica(b1);
+				break;
+
+			case 2:
+				ingresoDeDatosPolar(p1);
+				b1 = polarABinomica(p1);
+				break;
+		}
+	} while (modoC1 != 1 && modoC1 != 2);
+
+	do {
+		cout << "\n" << "Complejo 2:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+		cin >> modoC2;
+
+		switch(modoC2) {
+			case 1:
+				ingresoDeDatosBinomica(b2);
+				break;
+			case 2:
+				ingresoDeDatosPolar(p2);
+				b2 = polarABinomica(p2);
+				break;
+		}
+	} while (modoC2 != 1 && modoC2 != 2);
+
+	return;
+}
+
+// Sumar
+Binomica sumarBinomica(Binomica b1, Binomica b2) {
+	Binomica suma;
+
+	suma.real = b1.real + b2.real;
+	suma.imaginaria = b1.imaginaria + b2.imaginaria;
+
+	return suma;
+}
+
+void suma() {
+	Binomica b1, b2;
+	Binomica resultadoB;
+	Polar resultadoP;
+
+	ingresoDeDatosOB(b1, b2);
+	resultadoB = sumarBinomica(b1, b2);
+	resultadoP = binomicaAPolar(resultadoB);
+
+	cout << "\n" << "Resultado: " << "\n";
+	ImprimirBinomica(resultadoB);
+	ImprimirPolar(resultadoP);
+
+	return;
+}
+
+// Restar
+Binomica restarBinomica(Binomica b1, Binomica b2) {
+	Binomica resta;
+
+	resta.real = b1.real - b2.real;
+	resta.imaginaria = b1.imaginaria - b2.imaginaria;
+
+	return resta;
+}
+
+void resta() {
+	Binomica b1, b2;
+	Binomica resultadoB;
+	Polar resultadoP;
+
+	ingresoDeDatosOB(b1, b2);
+	resultadoB = restarBinomica(b1, b2);
+	resultadoP = binomicaAPolar(resultadoB);
+
+	cout << "\n" << "Resultado: " << "\n";
+	ImprimirBinomica(resultadoB);
+	ImprimirPolar(resultadoP);
+
+	return;
+}
+
+// Multiplicar
+Polar productoPolar(Polar p1, Polar p2) {
+	Polar producto;
+
+	producto.modulo = p1.modulo * p2.modulo;
+	producto.argumento = p1.argumento + p2.argumento;
+	producto.argumento = argumentoEnElPrimerGiro(producto.argumento);
+
+	return producto;
+}
+
+void producto() {
+	Binomica b1, b2;
+	Polar p1, p2;
+	Binomica resultadoB;
+	Polar resultadoP;
+
+	ingresoDeDatosOB(b1,b2);
+	p1 = binomicaAPolar (b1);
+	p2 = binomicaAPolar(b2);
+
+	resultadoP = productoPolar(p1,p2);
+	resultadoB = polarABinomica (resultadoP);
+
+	cout << "\n" << "Resultado: " << "\n";
+	ImprimirBinomica(resultadoB);
+	ImprimirPolar(resultadoP);
+
+	return;
+}
+
+// Dividir
+Polar cocientePolar(Polar p1, Polar p2) {
+	Polar cociente;
+
+	if (p2.modulo != 0) {
+		cociente.modulo = p1.modulo / p2.modulo;
+		cociente.argumento = p1.argumento - p2.argumento;
+		cociente.argumento = argumentoEnElPrimerGiro(cociente.argumento);
+
+		return cociente;
+	} else {
+		cout << "\n" << "Cociente no valido" << "\n";
+		cociente.modulo = NAN;
+		cociente.argumento = p1.argumento - p2.argumento;
+	}
+}
+
+void cociente() {
+	Binomica b1, b2;
+	Polar p1, p2;
+	Binomica resultadoB;
+	Polar resultadoP;
+
+	ingresoDeDatosOB(b1,b2);
+	p1 = binomicaAPolar (b1);
+	p2 = binomicaAPolar(b2);
+
+	resultadoP = cocientePolar(p1,p2);
+	resultadoB = polarABinomica (resultadoP);
+
+	cout << "\n" << "Resultado: " << "\n";
+	ImprimirBinomica (resultadoB);
+	ImprimirPolar (resultadoP);
+
+	return;
+}
+
+void funcionOB() {
+	system("cls");
+
+	int opcion = 0;
+
+	cout << "\n" << "Ingrese el numero de la operacion que desee realizar: " << "\n";
+	cout << "\n" << "1. Suma" << "\n";
+	cout << "2. Resta" << "\n";
+	cout << "3. Producto" << "\n";
+	cout << "4. Cociente" << "\n";
+
+	cout << "\n" << "Opcion: ";
+	cin >> opcion;
+
+	switch (opcion) {
+		case 1:
+			suma();
+			break;
+		case 2:
+			resta();
+			break;
+		case 3:
+			producto();
+			break;
+		case 4:
+			cociente();
+			break;
+		default:
+			cout << "\n" << "Datos incorrectos. Saliendo . . .\n\n"; // Si no coincide con los criterios de busqueda
+			return;
+			break;
+	}
+
+	return;
+}
+
+///////////////////////////////////////////
+
+void ingresoDeDatosTrigonometricas(Binomica &b1, Binomica &b2) {
+	Polar p1, p2;
+	int modoC1 = 0, modoC2 = 0;
+
+	do {
+		cout << "\n" << "Complejo 1:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+		cin >> modoC1;
+
+		switch (modoC1) {
+			case 1:
+				ingresoDeDatosBinomica(b1);
+				break;
+
+			case 2:
+				ingresoDeDatosPolar(p1);
+				b1 = polarABinomica(p1);
+				break;
+		}
+	} while (modoC1 != 1 && modoC1 != 2);
+
+	do {
+		cout << "\n" << "Complejo 2:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+		cin >> modoC2;
+
+		switch(modoC2) {
+			case 1:
+				ingresoDeDatosBinomica(b2);
+				break;
+			case 2:
+				ingresoDeDatosPolar(p2);
+				b2 = polarABinomica(p2);
+				break;
+		}
+	} while (modoC2 != 1 && modoC2 != 2);
+
+	return;
+}
+
+void ingresoDeDatosOA(Binomica &b1) {
+	Polar p1, p2;
+	int modoC1 = 0;
+
+	do {
+		cout << "\n" << "Complejo 1:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un numero complejo en forma binomica, o '2' en forma polar: ";
+		cin >> modoC1;
+
+		switch (modoC1) {
+			case 1:
+				ingresoDeDatosBinomica(b1);
+				break;
+			case 2:
+				ingresoDeDatosPolar(p1);
+				b1 = polarABinomica(p1);
+				break;
+		}
+	} while (modoC1 != 1);
+
+	return;
+}
+
+// Potenciacion
+Polar potenciaPolar(Polar p1, int exponente) {
+	Polar potencia;
+	potencia.modulo = pow(p1.modulo, exponente);
+	potencia.argumento = exponente * p1.argumento;
+
+	return potencia;
+}
+
+void potenciacion() {
+	Binomica b1;
+	Polar p1;
+	Binomica resultadoB;
+	Polar resultadoP;
+	int exponente = 0;
+
+	do {
+		cout << "\n" << "Ingrese el exponente: ";
+		cin >> exponente;
+
+		if (exponente < 0) {
+			cout << "\n" << "Potencia no valida" << "\n";
+		}
+	} while (exponente < 0);
+
+	ingresoDeDatosOA(b1);
+	p1 = binomicaAPolar(b1);
+
+	resultadoP = potenciaPolar(p1, exponente);
+	resultadoB = polarABinomica(resultadoP);
+
+	cout << "\n" << "Resultado: " << "\n";
+	ImprimirBinomica(resultadoB);
+	ImprimirPolar(resultadoP);
+
+	return;
+}
+
+int mcd(int a, int b) {
+	int x = 0, mcd = a, r = b;
+
+	while (r!=0) {
+		x = mcd;
+		mcd = r;
+		r = x % mcd;
+	}
+
+	return mcd;
+}
+
+// Radicacion
+void radicacionPolar(Polar p1, int indice) {
+	Polar potencia[indice];
+	Binomica resultadoB[indice];
+
+	for (int i = 0; i<indice; i++) {
+		potencia[i].modulo = pow(p1.modulo, 1/((int)indice));
+		potencia[i].argumento = (p1.argumento + 2*M_PI*i)/(indice);
+	}
+
+	cout << "--------------------";
+	for (int i = 0; i < indice; i++) {
+		ImprimirPolar(potencia[i]);
+		resultadoB[i] = polarABinomica(potencia[i]);
+		ImprimirBinomica(resultadoB[i]);
+		cout << "--------------------" << "\n";
+	}
+
+	cout << "Las raices primitivas de orden " << indice << " son:" << endl;
+	for (int i = 1; i < indice; i++) {
+		int nroRaizPrimitiva = i;
+		if (mcd(i, indice) == 1) {
+			cout << nroRaizPrimitiva << endl;
+		}
+	}
+
+	return;
+}
+
+void radicacion() {
+	Binomica b1;
+	Polar p1;
+	Binomica resultadoB;
+	Polar resultadoP;
+	int indice = 0;
+
+	do {
+		cout << "\n" << "Ingrese el indice: ";
+		cin >> indice;
+
+		if (indice < 0) {
+			cout << "\n" << "Indice no valido" << "\n";
+		}
+	} while (indice < 0);
+
+	ingresoDeDatosBinomica(b1);
+
+	p1 = binomicaAPolar(b1);
+
+	radicacionPolar(p1, indice);
+
+	return;
+}
+
+void funcionOA() {
+	system("cls");
+
+	int opcion = 0;
+
+	cout << "\n" << "Ingrese el numero de la operacion que desee realizar: " << "\n";
+	cout << "\n" << "1. Potencia natural" << "\n";
+	cout << "2. Radicacion natural" << "\n";
+
+	cout << "\n" << "Opcion: ";
+	cin >> opcion;
+
+	switch (opcion) {
+		case 1:
+			potenciacion();
+			break;
+		case 2:
+			radicacion();
+			break;
+		default:
+			cout << "\n" << "Datos incorrectos. Saliendo . . .\n\n"; // Si no coincide con los criterios de busqueda
+			return;
+			break;
+	}
+
+	return;
+}
+
+///////////////////////////////////////////
+
+//void fasores() {
+//	//Trigonometrica f1, f2;
+//	Trigonometrica resultadoF;
+//
+//	ingresoDeDatosSF();
+//	resultadoB = restarBinomica(b1, b2);
+//	resultadoP = binomicaAPolar(resultadoB);
+//
+//	cout << "\n" << "Resultado: " << "\n";
+//	ImprimirBinomica(resultadoB);
+//	ImprimirPolar(resultadoP);
+//
+//	return;
+//}
+
+void ingresoDeDatosTrigo(Trigonometrica &funcion) {
+	cout << "\n" << "Ingrese la amplitud de la funcion: ";
+	cin >> funcion.amplitud;
+	cout << "\n" << "Ingrese la frecuencia angular de la funcion: ";
+	cin >> funcion.frecAngular;
+	cout << "\n" << "Ingrese la fase de la funcion: ";
+	cin >> funcion.fase;
+
+	return;
+}
+
+Trigonometrica pasajeACoseno(Trigonometrica& funcion) {
+	Trigonometrica pasaje;
+
+	pasaje.amplitud = funcion.amplitud;
+	pasaje.frecAngular = funcion.frecAngular;
+	pasaje.fase = funcion.fase + M_PI / 2;
+
+	return pasaje;
+}
+
+void ingresoDeDatosSF() {
+	Trigonometrica funcion1, funcion2;
+	int modoF1 = 0, modoF2 = 0;
+
+	do {
+		cout << "\n" << "Funcion 1:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un coseno, o '2' un seno: ";
+		cin >> modoF1;
+
+		switch (modoF1) {
+			case 1:
+				ingresoDeDatosTrigo(funcion1);
+				break;
+			case 2:
+				Trigonometrica funcionPasada1;
+				funcionPasada1 = pasajeACoseno(funcion1);
+				ingresoDeDatosTrigo(funcionPasada1);
+				funcion1 = funcionPasada1;
+				break;
+		}
+	} while (modoF1 != 1 && modoF1 != 2);
+
+	do {
+		cout << "\n" << "Funcion 2:" << "\n";
+		cout << "\n" << "Escriba '1' si quiere ingresar un coseno, o '2' un seno: ";
+		cin >> modoF2;
+
+		switch (modoF2) {
+			case 1:
+				ingresoDeDatosTrigo(funcion2);
+				break;
+			case 2:
+				Trigonometrica funcionPasada2;
+				funcionPasada2 = pasajeACoseno(funcion2);
+				ingresoDeDatosTrigo(funcionPasada2);
+				funcion2 = funcionPasada2;
+				break;
+		}
+	} while (modoF2 != 1 && modoF2 != 2);
+
+	if (funcion1.frecAngular != funcion2.frecAngular) {
+		cout << "\n" << "Las frecuencias deben ser iguales" << "\n";
+	} else {
+		double M;
+		double theta;
+		double diferencia;
+		diferencia = funcion2.fase - funcion1.fase;
+
+		M = pow(pow(funcion1.amplitud + funcion2.amplitud * cos(diferencia),2) + pow(funcion2.amplitud,2) * pow(sin(diferencia),2), 0.5);
+
+		theta = atan((funcion2.amplitud * sin(diferencia)) / (funcion1.amplitud + funcion2.amplitud * cos(diferencia)));
+
+		cout << "La funcion suma es: " << M << " * cos(" << funcion1.frecAngular << " * t + " << theta << ")";
+	}
+
+	return;
+}
+
+void funcionSF() {
+	Trigonometrica funcionSuma;
+
+	system("cls");
+
+	ingresoDeDatosSF();
+
+	return;
+}
