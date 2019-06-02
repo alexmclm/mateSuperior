@@ -52,7 +52,7 @@ Polar potenciaPolar(Polar, int);
 
 void fasores();
 void ingresoDeDatosTrigo(Trigonometrica &);
-Trigonometrica pasajeACoseno(Trigonometrica &);
+Trigonometrica pasajeACoseno(Trigonometrica);
 void ingresoDeDatosSF();
 void funcionSF();
 
@@ -632,20 +632,31 @@ void funcionOA() {
 
 ///////////////////////////////////////////
 
-//void fasores() {
-//	//Trigonometrica f1, f2;
-//	Trigonometrica resultadoF;
-//
-//	ingresoDeDatosSF();
-//	resultadoB = restarBinomica(b1, b2);
-//	resultadoP = binomicaAPolar(resultadoB);
-//
-//	cout << "\n" << "Resultado: " << "\n";
-//	ImprimirBinomica(resultadoB);
-//	ImprimirPolar(resultadoP);
-//
-//	return;
-//}
+void ImprimirFuncion(Trigonometrica funcion) {
+	cout << "\n" << "En funcion del coseno: " << "\n";
+
+	if (funcion.fase < 0) {
+		cout << "La funcion suma es: " << funcion.amplitud << " * cos(" << funcion.frecAngular << "*t " << funcion.fase << ")" << "\n";
+	} else if (funcion.fase == 0) {
+		cout << "La funcion suma es: " << funcion.amplitud << " * cos(" << funcion.frecAngular << "*t)" << "\n";
+	} else {
+		cout << "La funcion suma es: " << funcion.amplitud << " * cos(" << funcion.frecAngular << "*t +" << funcion.fase << ")" << "\n";
+	}
+
+	cout << "En funcion del seno: " << "\n";
+
+	funcion.fase += M_PI / 2; // Recordando que cos(x) = sen(x + pi/2)
+
+	if (funcion.fase < 0) {
+		cout << "La funcion suma es: " << funcion.amplitud << " * sen(" << funcion.frecAngular << "*t " << funcion.fase << ")" << "\n";
+	} else if (funcion.fase == 0) {
+		cout << "La funcion suma es: " << funcion.amplitud << " * sen(" << funcion.frecAngular << "*t)" << "\n";
+	} else {
+		cout << "La funcion suma es: " << funcion.amplitud << " * sen(" << funcion.frecAngular << "*t + " << funcion.fase << ")" << "\n";
+	}
+
+	return;
+}
 
 void ingresoDeDatosTrigo(Trigonometrica &funcion) {
 	cout << "\n" << "Ingrese la amplitud de la funcion: ";
@@ -658,18 +669,18 @@ void ingresoDeDatosTrigo(Trigonometrica &funcion) {
 	return;
 }
 
-Trigonometrica pasajeACoseno(Trigonometrica& funcion) {
+Trigonometrica pasajeACoseno(Trigonometrica funcion) {
 	Trigonometrica pasaje;
 
 	pasaje.amplitud = funcion.amplitud;
 	pasaje.frecAngular = funcion.frecAngular;
-	pasaje.fase = funcion.fase + M_PI / 2;
+	pasaje.fase = funcion.fase - M_PI / 2;
 
 	return pasaje;
 }
 
 void ingresoDeDatosSF() {
-	Trigonometrica funcion1, funcion2;
+	Trigonometrica funcion1, funcion2, funcionSuma;
 	int modoF1 = 0, modoF2 = 0;
 
 	do {
@@ -682,10 +693,8 @@ void ingresoDeDatosSF() {
 				ingresoDeDatosTrigo(funcion1);
 				break;
 			case 2:
-				Trigonometrica funcionPasada1;
-				funcionPasada1 = pasajeACoseno(funcion1);
-				ingresoDeDatosTrigo(funcionPasada1);
-				funcion1 = funcionPasada1;
+				ingresoDeDatosTrigo(funcion1);
+				funcion1.fase -= M_PI / 2; // Recordando que sen(x) = cos(x - pi/2)
 				break;
 		}
 	} while (modoF1 != 1 && modoF1 != 2);
@@ -700,10 +709,8 @@ void ingresoDeDatosSF() {
 				ingresoDeDatosTrigo(funcion2);
 				break;
 			case 2:
-				Trigonometrica funcionPasada2;
-				funcionPasada2 = pasajeACoseno(funcion2);
-				ingresoDeDatosTrigo(funcionPasada2);
-				funcion2 = funcionPasada2;
+				ingresoDeDatosTrigo(funcion2);
+				funcion2.fase -= M_PI / 2; // Recordando que sen(x) = cos(x - pi/2)
 				break;
 		}
 	} while (modoF2 != 1 && modoF2 != 2);
@@ -711,16 +718,23 @@ void ingresoDeDatosSF() {
 	if (funcion1.frecAngular != funcion2.frecAngular) {
 		cout << "\n" << "Las frecuencias deben ser iguales" << "\n";
 	} else {
-		double M;
-		double theta;
-		double diferencia;
-		diferencia = funcion2.fase - funcion1.fase;
+		double M = 0;
+		double theta = 0;
 
-		M = pow(pow(funcion1.amplitud + funcion2.amplitud * cos(diferencia),2) + pow(funcion2.amplitud,2) * pow(sin(diferencia),2), 0.5);
+		double parteRealSumaBinomica = funcion1.amplitud*cos(funcion1.fase) + funcion2.amplitud*cos(funcion2.fase);
+		double parteImaginariaSumaBinomica = funcion1.amplitud*sin(funcion1.fase) + funcion2.amplitud*sin(funcion2.fase);
 
-		theta = atan((funcion2.amplitud * sin(diferencia)) / (funcion1.amplitud + funcion2.amplitud * cos(diferencia)));
+		// Calculo de la amplitud
+		M = sqrt(parteRealSumaBinomica*parteRealSumaBinomica + parteImaginariaSumaBinomica*parteImaginariaSumaBinomica);
 
-		cout << "La funcion suma es: " << M << " * cos(" << funcion1.frecAngular << " * t + " << theta << ")";
+		// Calculo de la fase
+		theta = calcularArgumento(parteRealSumaBinomica, parteImaginariaSumaBinomica);
+		theta = argumentoEnElPrimerGiro(theta); // Opcional
+
+		funcionSuma.amplitud = M;
+		funcionSuma.fase = theta;
+		funcionSuma.frecAngular = funcion1.frecAngular; // o funcion2.frecAngular
+		ImprimirFuncion(funcionSuma);
 	}
 
 	return;
